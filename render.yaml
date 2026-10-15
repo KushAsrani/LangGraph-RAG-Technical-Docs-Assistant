@@ -1,0 +1,59 @@
+# render.yaml — Render deployment manifest for LangGraph-RAG-Technical-Docs-Assistant
+# NOTES:
+# - Update startCommand module paths to match your repository layout if they differ (app.main:app, app/ui.py, etc).
+# - Do NOT store secrets directly in this file; fill them in the Render dashboard for each service.
+# - This file defines three services: a FastAPI web API, a background worker for ingestion, and a Streamlit UI.
+
+services:
+  - type: web
+    name: langgraph-api
+    env: python
+    repo: KushAsrani/LangGraph-RAG-Technical-Docs-Assistant
+    branch: main
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    plan: starter
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: LOG_LEVEL
+        value: "INFO"
+      # Put your secrets in the Render service settings (do not commit them here)
+      - key: OPENAI_API_KEY
+        value: ""
+      - key: DATABASE_URL
+        value: ""
+      - key: REDIS_URL
+        value: ""
+
+  - type: worker
+    name: langgraph-ingest
+    env: python
+    repo: KushAsrani/LangGraph-RAG-Technical-Docs-Assistant
+    branch: main
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: python -m ingestion.ingest_corpus
+    plan: starter
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  - type: web
+    name: langgraph-streamlit
+    env: python
+    repo: KushAsrani/LangGraph-RAG-Technical-Docs-Assistant
+    branch: main
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    # Adjust the streamlit path if your UI entrypoint is somewhere else (example: app/ui.py)
+    startCommand: streamlit run app/ui.py --server.port $PORT --server.headless true
+    plan: starter
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
