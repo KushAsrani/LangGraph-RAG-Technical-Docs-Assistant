@@ -5,7 +5,13 @@ A production-grade, self-correcting Retrieval-Augmented Generation (RAG) assista
 
 ---
 
-## 🧞 Project Overview
+### 🌐 Live Deployment
+This application is fully containerized and deployed on **Render**!
+- **Live Streamlit App:** [RAG Documentation Assistant on Render](https://langgraph-rag-technical-docs-assistant.onrender.com/)
+Link:https://langgraph-rag-technical-docs-assistant.onrender.com/
+---
+
+## Project Overview
 
 ### What Problem This Solves
 Technical documentation is dense, constantly updated, and contains complex relationships (API endpoints, parameters, configuration blocks). Standard LLMs lack this local context and frequently hallucinate answers. Traditional RAG systems retrieve documents but do not evaluate their relevance, leading to noisy contexts and incorrect generations. 
